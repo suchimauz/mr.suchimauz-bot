@@ -4,10 +4,13 @@ from aiogram.dispatcher.filters.builtin import CommandHelp
 from loader import dp
 
 
+help_commands = ("Список команд: ",
+                 "/start - Инициализация",
+                 "/help - Получить справку",)
+
+
 @dp.message_handler(CommandHelp())
 async def bot_help(message: types.Message):
-    text = ("Список команд: ",
-            "/start - Начать диалог",
-            "/help - Получить справку")
-    
-    await message.answer("\n".join(text))
+    text = "\n".join(help_commands)
+
+    await message.answer(text)
