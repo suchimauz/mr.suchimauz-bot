@@ -6,7 +6,11 @@ from loader import dp
 
 help_commands = ("Список команд: ",
                  "/start - Инициализация",
-                 "/help - Получить справку",)
+                 "/menu - Вызвать меню",
+                 "/shop - Купить товары",
+                 "/profile - Личный кабинет",
+                 "/support - Поддержка",
+                 "/rules - Правила")
 
 
 @dp.message_handler(CommandHelp())
