@@ -4,5 +4,6 @@ from .menu import dp
 from .shop import dp
 from .payment import dp
 from .transaction import dp
+from .admin import dp
 
 __all__ = ["dp"]

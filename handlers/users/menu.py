@@ -1,16 +1,19 @@
 from aiogram.dispatcher.filters import Command
 from aiogram.types import Message
 
+from handlers.users.admin.admin import list_admin_menu
 from handlers.users.payment import list_payment_methods
 from handlers.users.shop import list_product_categories
-from keyboards.default import menu
+from keyboards.default.menu import get_menu
 
 from loader import dp
-from utils.db.models.user import get_user, get_user_balance
+from utils.db.models.user import get_user_balance
 
 
 @dp.message_handler(Command("menu"))
 async def show_menu(message: Message):
+    menu = await get_menu(message.from_user.id)
+
     await message.answer(reply_markup=menu, text="Выберите пункт меню")
 
 
@@ -18,6 +21,12 @@ async def show_menu(message: Message):
 @dp.message_handler(Command("shop"))
 async def show_shop(message: Message):
     await list_product_categories(message)
+
+
+@dp.message_handler(text="👤 Админ-панель", is_admin=True)
+@dp.message_handler(Command("admin"))
+async def show_admin_menu(message: Message):
+    await list_admin_menu(message)
 
 
 @dp.message_handler(text="🔒 Личный кабинет")

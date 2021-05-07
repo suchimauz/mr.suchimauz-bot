@@ -1,5 +1,11 @@
 import requests
 
+from data.config import ADMINS
+
+
+def is_admin(user_id):
+    return str(user_id) in ADMINS
+
 
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
