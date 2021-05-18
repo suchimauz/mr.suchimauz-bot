@@ -16,6 +16,7 @@ class Payment(db.Model):
     cost_rub = Column(db.Integer)  # rub
     status = Column(db.String)  # waiting, success, failed, cancelled
     wait_comment = Column(db.String, nullable=True)
+    created_date = Column(db.DateTime)
 
 
 async def get_payment_with_id(payment_id) -> Payment:
