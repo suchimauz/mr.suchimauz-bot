@@ -41,7 +41,7 @@ async def wait_transaction_count(message: Message, state: FSMContext):
         if count > product_count:
             await message.answer(text=f"Нет столько товара, укажите меньшее количество еще раз\n"
                                       f"В наличии: <b>{product_count}</b>")
-        elif transaction_cost < user_balance_cents:
+        elif transaction_cost <= user_balance_cents:
             transaction = await Transaction(
                 user_id=message.from_user.id,
                 product_type=product.type,
