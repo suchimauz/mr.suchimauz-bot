@@ -57,4 +57,7 @@ async def update_purchased_ba(bank_accounts: List[BankAccount], user_id):
 
 
 async def get_available_ba_for_user(count) -> List[BankAccount]:
-    return await BankAccount.query.where(BankAccount.status == "waiting").limit(count).gino.all()
+    return await BankAccount.query.where(BankAccount.status == "waiting")\
+        .limit(count)\
+        .order_by(BankAccount.created_date.desc())\
+        .gino.all()

@@ -1,3 +1,4 @@
+from datetime import datetime
 from random import randrange
 from typing import Union
 
@@ -61,7 +62,8 @@ async def payment_cost(message: Message, state: FSMContext):
             cost_rub=cost_rub,
             cost=cost_cents,
             status="waiting",
-            wait_comment=wait_comment
+            wait_comment=wait_comment,
+            created_date=datetime.now()
         ).create()
 
         if payment_method.method == 'qiwi':
