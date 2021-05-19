@@ -8,7 +8,7 @@ from utils.db.models.check import add_check
 from utils.helpers import get_cents_from_usd, get_usd_from_cents
 
 
-@dp.callback_query_handler(new_check_cd.filter())
+@dp.callback_query_handler(new_check_cd.filter(), is_admin=True)
 async def new_check_cd(call: types.CallbackQuery, state: FSMContext, **kwargs):
     await call.message.answer(text="Введите сумму в долларах <b>USD</b>")
 

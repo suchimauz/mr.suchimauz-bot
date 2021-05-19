@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy import sql, Column, and_
 
 from utils.db.database import db
@@ -15,15 +17,31 @@ class User(db.Model):
     last_activity = Column(db.DateTime, nullable=True)
 
 
+async def get_users_count():
+    return await db.select([db.func.count(User.id)]).gino.scalar()
+
+
+async def get_users(limit, offset) -> List[User]:
+    users = await User.query.limit(limit).offset(offset).gino.all()
+
+    return users
+
+
+async def get_users_ids():
+    response = await db.select([User.id]).gino.all()
+
+    return list(map(lambda u: u[0], response))
+
+
 # Функция для получения юзера по айди
 async def get_user(user_id) -> User:
-    user = await User.query.where(User.id == user_id).gino.first()
+    user = await User.query.where(User.id == int(user_id)).gino.first()
     return user
 
 
 # Функция для получения баланса юзера
 async def get_user_balance(user_id):
-    user = await User.query.where(User.id == user_id).gino.first()
+    user = await User.query.where(User.id == int(user_id)).gino.first()
 
     payment_conditions = [
         Payment.user_id == user.id,

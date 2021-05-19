@@ -3,6 +3,7 @@ from typing import List
 from sqlalchemy import sql, Column
 
 from utils.db.database import db
+from utils.helpers import get_usd_from_cents
 
 
 class Product(db.Model):
@@ -15,15 +16,15 @@ class Product(db.Model):
     default_price = Column(db.Integer)
     whole_price = Column(db.Integer)  # >50
 
-    async def get_default_price(self):
+    async def get_default_price(self, user_id=None):
         return self.default_price
 
-    async def get_whole_price(self):
+    async def get_whole_price(self, user_id=None):
         return self.whole_price
 
-    async def get_price(self, count):
-        default_price = await self.get_default_price()
-        whole_price = await self.get_whole_price()
+    async def get_price(self, count, user_id=None):
+        default_price = await self.get_default_price(user_id)
+        whole_price = await self.get_whole_price(user_id)
 
         if count <= 50:
             price = default_price * count
@@ -36,7 +37,15 @@ class Product(db.Model):
         default_price = await self.get_default_price()
         whole_price = await self.get_whole_price()
 
-        return f"{default_price / 100}$ (от 50шт. - {whole_price / 100}$)"
+        return f"{get_usd_from_cents(default_price)}$ (от 50шт. - {get_usd_from_cents(whole_price)}$)"
+
+
+async def get_products(limit=100, offset=0) -> List[Product]:
+    return await Product.query.limit(limit).offset(offset).gino.all()
+
+
+async def get_product_count():
+    return await db.select([db.func.count(Product.type)]).gino.scalar()
 
 
 async def get_products_by_category(category) -> List[Product]:
