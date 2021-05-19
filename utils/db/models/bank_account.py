@@ -47,7 +47,7 @@ async def get_ba_count_by_product(product, add_conditions=None):
 
 async def update_purchased_ba(bank_accounts: List[BankAccount], user_id):
     return await BankAccount.update.values(
-        status="success",
+        status="wait-minik",
         status_changed_by=user_id
     ).where(
         BankAccount.id.in_(

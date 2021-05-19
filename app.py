@@ -4,7 +4,7 @@ import threading
 from aiogram import executor
 
 from handlers import dp
-from utils.misc.jobs import cancel_bank_accounts, send_report_transactions
+from utils.misc.jobs import cancel_bank_accounts, send_report_transactions, check_schwab_miniks
 from utils.notify_admins import on_startup_notify
 from utils.db.database import create_db
 
@@ -16,6 +16,8 @@ async def on_startup(dispatcher):
     await create_db()
 
     await send_report_transactions()
+
+    # await check_schwab_miniks()
     _thread = threading.Thread(target=asyncio.run, args=(cancel_bank_accounts(),))
     _thread.start()
 

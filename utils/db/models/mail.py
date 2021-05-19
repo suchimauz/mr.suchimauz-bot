@@ -16,3 +16,6 @@ class Mail(db.Model):
     imap = Column(db.String)
     uses = Column(JSONB, default=[])
 
+
+async def get_mail_by_email(email) -> Mail:
+    return await Mail.query.where(Mail.email == email).gino.first()

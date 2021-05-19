@@ -1,7 +1,7 @@
 from typing import Union
 
 from aiogram.dispatcher import FSMContext
-from aiogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, ContentType
 from aiogram_broadcaster import MessageBroadcaster
 
 from keyboards.inline.admin.admin import admin_menu_keyboard, admin_cd, admin_send_message_to_all_users_cd
@@ -134,8 +134,8 @@ async def send_message_to_all_users(call: CallbackQuery, state: FSMContext, call
         await state.set_state("wait_message_to_send_all_users")
 
 
-@dp.message_handler(state="wait_message_to_send_all_users")
-async def get_new_check(message: Message, state: FSMContext):
+@dp.message_handler(state="wait_message_to_send_all_users", content_types=ContentType.all())
+async def send_message_to_users(message: Message, state: FSMContext):
     await state.reset_state()
 
     users = await get_users_ids()
