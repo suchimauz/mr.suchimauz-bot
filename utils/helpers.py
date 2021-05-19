@@ -1,4 +1,5 @@
 import requests
+from aiogram.types import InlineKeyboardMarkup
 
 from data.config import ADMINS
 
@@ -44,4 +45,5 @@ def get_cents_from_usd(usd):
 def get_usd_from_cents(cents):
     usd = cents / 100
 
-    return round(usd, 1)
+    return round(usd, 2)
+
