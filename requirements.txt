@@ -1,3 +1,5 @@
+six
+pytz
 aiogram~=2.13
 environs~=8.0.0
 gino~=1.0.1
