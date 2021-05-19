@@ -10,9 +10,9 @@ class Mail(db.Model):
     __tablename__ = "mails"
     query: sql.Select
 
-    mail = Column(db.String, primary_key=True)
+    email = Column(db.String, primary_key=True)
     password = Column(db.String)
-    reserve_mail = Column(db.String, nullable=True)
+    reserved_email = Column(db.String, nullable=True)
     imap = Column(db.String)
     uses = Column(JSONB, default=[])
 
