@@ -12,11 +12,12 @@ from utils.db.database import create_db
 async def on_startup(dispatcher):
     # Уведомляет про запуск
     await on_startup_notify(dispatcher)
+
+    await create_db()
+
     await send_report_transactions()
     _thread = threading.Thread(target=asyncio.run, args=(cancel_bank_accounts(),))
     _thread.start()
-
-    await create_db()
 
 
 if __name__ == '__main__':
