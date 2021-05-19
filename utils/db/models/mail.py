@@ -13,6 +13,6 @@ class Mail(db.Model):
     mail = Column(db.String, primary_key=True)
     password = Column(db.String)
     reserve_mail = Column(db.String, nullable=True)
+    imap = Column(db.String)
     uses = Column(JSONB, default=[])
-
 

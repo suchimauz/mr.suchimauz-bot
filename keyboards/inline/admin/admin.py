@@ -11,8 +11,12 @@ admin_cd = CallbackData(
     "page",
     "user_id",
 )
-admin_send_message_to_all_users_cd: CallbackData = CallbackData(
+admin_send_message_to_all_users_cd = CallbackData(
     "admin_send_message_to_all_users",
+    "cancel"
+)
+admin_upload_mails_from_file_cd = CallbackData(
+    "admin_upload_mails_from_file",
     "cancel"
 )
 
@@ -45,6 +49,14 @@ async def admin_menu_keyboard():
         InlineKeyboardButton(
             text="✉️ Отправить всем сообщение",
             callback_data=admin_send_message_to_all_users_cd.new(
+                cancel="0",
+            )
+        )
+    )
+    markup.add(
+        InlineKeyboardButton(
+            text="💾 Загрузить почты с файла",
+            callback_data=admin_upload_mails_from_file_cd.new(
                 cancel="0",
             )
         )
