@@ -17,8 +17,10 @@ async def on_startup(dispatcher):
 
     await send_report_transactions()
 
-    await check_schwab_miniks()
     _thread = threading.Thread(target=asyncio.run, args=(cancel_bank_accounts(),))
+    _thread.start()
+
+    _thread = threading.Thread(target=asyncio.run, args=(check_schwab_miniks(),))
     _thread.start()
 
 

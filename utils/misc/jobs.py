@@ -90,37 +90,40 @@ async def check_schwab_miniks():
     db = Gino()
     await db.set_bind(POSTGRES_URI)
 
-    query = db.text(
-        "SELECT bank_email AS email, account_number, status_changed_by, id AS user_id "
-        "FROM bank_accounts "
-        "WHERE status = 'wait-minik'"
-    )
+    while True:
+        query = db.text(
+            "SELECT bank_email AS email, account_number, status_changed_by, id AS user_id "
+            "FROM bank_accounts "
+            "WHERE status = 'wait-minik'"
+        )
 
-    result = await db.all(query)
-    for mail_array in result:
-        account_number = mail_array[1]
-        user_id = mail_array[2]
-        bank_account_id = mail_array[3]
+        result = await db.all(query)
+        for mail_array in result:
+            account_number = mail_array[1]
+            user_id = mail_array[2]
+            bank_account_id = mail_array[3]
 
-        bank_account = await get_bank_account_by_id(bank_account_id)
+            bank_account = await get_bank_account_by_id(bank_account_id)
 
-        mail = await get_mail_by_email(mail_array[0])
-        login = mail.email
-        password = mail.password
+            mail = await get_mail_by_email(mail_array[0])
+            login = mail.email
+            password = mail.password
 
-        imap = imaplib.IMAP4_SSL('imap.mail.ru')
-        imap.login(login, password)
+            imap = imaplib.IMAP4_SSL('imap.mail.ru')
+            imap.login(login, password)
 
-        imap.list()
-        imap.select()
-        r1, inbox = imap.search(None, 'ALL')
+            imap.list()
+            imap.select()
+            r1, inbox = imap.search(None, 'ALL')
 
-        for uid in inbox[0].split():
-            await check_minik(imap, user_id, account_number, uid, bank_account)
+            for uid in inbox[0].split():
+                await check_minik(imap, user_id, account_number, uid, bank_account)
 
-        imap.list()
-        imap.select("&BCEEPwQwBDw-")
-        r2, spam = imap.search(None, 'ALL')
+            imap.list()
+            imap.select("&BCEEPwQwBDw-")
+            r2, spam = imap.search(None, 'ALL')
 
-        for uid in spam[0].split():
-            await check_minik(imap, user_id, account_number, uid, bank_account)
+            for uid in spam[0].split():
+                await check_minik(imap, user_id, account_number, uid, bank_account)
+
+        time.sleep(10800)
