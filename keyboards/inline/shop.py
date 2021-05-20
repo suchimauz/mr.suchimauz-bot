@@ -31,7 +31,7 @@ async def product_categories_keyboard():
     return markup
 
 
-async def products_keyboard(category):
+async def products_keyboard(category, user_id):
     CURRENT_LEVEL = 1
     markup = InlineKeyboardMarkup()
 
@@ -39,7 +39,7 @@ async def products_keyboard(category):
 
     for product in products:
         number_of_products = await get_ba_count_by_product(product.type)
-        price_text = await product.get_price_text()
+        price_text = await product.get_price_text(user_id)
 
         button_text = f"{number_of_products} шт. - {product.name} - {price_text}"
         callback_data = make_callback_data(level=CURRENT_LEVEL + 1,

@@ -22,7 +22,7 @@ async def list_product_categories(message: Union[Message, CallbackQuery], **kwar
 
 
 async def list_products(callback: CallbackQuery, category, **kwargs):
-    markup = await products_keyboard(category)
+    markup = await products_keyboard(category=category, user_id=callback.from_user.id)
 
     await callback.message.edit_text(text="Выберите товар", reply_markup=markup)
 
@@ -37,7 +37,7 @@ async def show_product(callback: CallbackQuery, category, product_type, **kwargs
     if product.type == "schwab":
         product_count = await get_ba_count_by_product(product.type)
 
-    price_text = await product.get_price_text()
+    price_text = await product.get_price_text(user_id=callback.from_user.id)
 
     text = f"Информация о товаре: \n\n" \
            f"Название: <b>{product.name}</b>\n" \
