@@ -83,7 +83,7 @@ async def admin_users_list_keyboard(prev_keyboard, search, page):
                     keyboard="admin_user_show",
                     prev_keyboard=CURRENT_KEYBOARD,
                     search=search,
-                    page=1,
+                    page=page,
                     user_id=user.id
                 )
             )
@@ -133,7 +133,7 @@ async def admin_user_show_keyboard(prev_keyboard, search, page, user_id):
             callback_data=make_admin_cd_callback_data(
                 keyboard=prev_keyboard,
                 search=search,
-                page=1,
+                page=page,
             )
         )
     )
