@@ -35,7 +35,7 @@ async def wait_transaction_count(message: Message, state: FSMContext):
         product_count = await get_ba_count_by_product(product.type)
         user_balance = await get_user_balance(message.from_user.id)
         user_balance_cents = get_cents_from_usd(user_balance)
-        transaction_cost = await product.get_price(count)
+        transaction_cost = await product.get_price(count=count, user_id=message.from_user.id)
         transaction_status = "waiting"
 
         if count > product_count:
