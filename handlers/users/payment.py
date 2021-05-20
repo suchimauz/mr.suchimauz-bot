@@ -19,7 +19,10 @@ from utils.payments.qiwi import check_qiwi_payment
 async def list_payment_methods(message: Message, **kwargs):
     markup = await payment_methods_keyboard(message.from_user.id)
 
-    await message.answer(text="Выберите способ пополнения",
+    text = "Выберите способ пополнения\n\n" \
+           "<i>Если в списке нету вашего способа оплаты, обратитесь ко мне: <b>@suchimauz</b></i>"
+
+    await message.answer(text=text,
                          reply_markup=markup)
 
 

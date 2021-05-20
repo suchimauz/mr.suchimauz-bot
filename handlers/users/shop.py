@@ -39,10 +39,17 @@ async def show_product(callback: CallbackQuery, category, product_type, **kwargs
 
     price_text = await product.get_price_text()
 
-    await callback.message.edit_text(text=f"Информация о товаре: \n\n"
-                                          f"Название: <b>{product.name}</b>\n"
-                                          f"Цена: <i><b>{price_text}</b></i>\n"
-                                          f"Количество: <i><b>{product_count}</b></i>",
+    text = f"Информация о товаре: \n\n" \
+           f"Название: <b>{product.name}</b>\n" \
+           f"Цена: <i><b>{price_text}</b></i>\n" \
+           f"Количество: <i><b>{product_count}</b></i>"
+
+    if product.type == "schwab":
+        text = text + f"\n\nТестовый депозит приходит обычно на следующий день после привязки!\n" \
+                      f"<b>ВАЖНО!</b> " \
+                      f"<i>Если привязать на выходных, то тестовый депозит придет в понедельник-вторник!</i>"
+
+    await callback.message.edit_text(text=text,
                                      reply_markup=markup)
 
 
