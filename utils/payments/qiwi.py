@@ -21,7 +21,7 @@ def payment_history_last(next_TxnId=None, next_TxnDate=None):
     parameters = {
         'startDate': startDate.strftime("%Y-%m-%dT%H:%M:%S+03:00"),
         'endDate': endDate.strftime("%Y-%m-%dT%H:%M:%S+03:00"),
-        'rows': 50,
+        'rows': 10,
         'operation': 'IN',
         'nextTxnId': next_TxnId,
         'nextTxnDate': next_TxnDate
@@ -42,8 +42,6 @@ async def check_qiwi_payment(payment: Payment):
         data = result['data']
 
         for data_item in data:
-            print(data_item)
-
             data_item_status = data_item['status']
             data_item_cost_amount = data_item['sum']['amount']
             data_item_cost_currency = data_item['sum']['currency']
