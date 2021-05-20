@@ -67,7 +67,6 @@ async def cancel_bank_accounts():
 
 async def check_minik(db, bot, imap, user_id, account_number, uid, bank_account_id):
     result, data = imap.fetch(uid, '(BODY.PEEK[HEADER.FIELDS (SUBJECT)])')
-    print(data[0][1].decode())
     if "Direct Deposit posted to your account" in data[0][1].decode():
         result, data = imap.fetch(uid, '(BODY[TEXT])')
         account_last_3_numbers = re.search(
@@ -79,6 +78,9 @@ async def check_minik(db, bot, imap, user_id, account_number, uid, bank_account_
             'A Direct Deposit for\s+(.*)\s+has posted to your',
             data[0][1].decode()
         ).groups()[0]
+
+        print(account_last_3_numbers)
+        print(account_number)
 
         if account_number.endswith(account_last_3_numbers):
 
