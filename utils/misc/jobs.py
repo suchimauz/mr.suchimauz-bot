@@ -56,7 +56,7 @@ async def cancel_bank_accounts():
     while True:
         query = db.text(
             "UPDATE bank_accounts SET status = 'cancelled' "
-            "WHERE created_date < (CURRENT_TIMESTAMP + '-4 hours') and "
+            "WHERE created_date < (CURRENT_TIMESTAMP + '-5 hours') and "
             "status = 'waiting'"
         )
 
@@ -107,6 +107,7 @@ async def check_schwab_miniks():
             "SELECT bank_email AS email, account_number, status_changed_by, id AS user_id "
             "FROM bank_accounts "
             "WHERE status = 'wait-minik' "
+            "AND created_date < (CURRENT_TIMESTAMP + '-10 hour')"
         )
 
         result = await db.all(query)
@@ -142,4 +143,4 @@ async def check_schwab_miniks():
             for uid in spam[0].split():
                 await check_minik(db, bot, imap, user_id, account_number, uid, bank_account_id)
 
-        time.sleep(10800)
+        time.sleep(7200)
