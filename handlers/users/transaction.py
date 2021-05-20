@@ -25,49 +25,53 @@ async def buy_product(call: CallbackQuery, state: FSMContext, callback_data: dic
 
 @dp.message_handler(state="wait_transaction_count")
 async def wait_transaction_count(message: Message, state: FSMContext):
-    data = await state.get_data()
-    product_type = data.get("product_type")
-    product = await get_product_by_type(product_type)
+    try:
+        data = await state.get_data()
+        product_type = data.get("product_type")
+        product = await get_product_by_type(product_type)
 
-    count = int(message.text)
+        count = int(message.text)
 
-    if product.type == "schwab":
-        product_count = await get_ba_count_by_product(product.type)
-        user_balance = await get_user_balance(message.from_user.id)
-        user_balance_cents = get_cents_from_usd(user_balance)
-        transaction_cost = await product.get_price(count=count, user_id=message.from_user.id)
-        transaction_status = "waiting"
+        if product.type == "schwab":
+            product_count = await get_ba_count_by_product(product.type)
+            user_balance = await get_user_balance(message.from_user.id)
+            user_balance_cents = get_cents_from_usd(user_balance)
+            transaction_cost = await product.get_price(count=count, user_id=message.from_user.id)
+            transaction_status = "waiting"
 
-        if count > product_count:
-            await message.answer(text=f"Нет столько товара, укажите меньшее количество еще раз\n"
-                                      f"В наличии: <b>{product_count}</b>")
-        elif transaction_cost <= user_balance_cents:
-            transaction = await Transaction(
-                user_id=message.from_user.id,
-                product_type=product.type,
-                count=count,
-                cost=transaction_cost,
-                status=transaction_status,
-                created_date=datetime.now()
-            ).create()
+            if count > product_count:
+                await message.answer(text=f"Нет столько товара, укажите меньшее количество еще раз\n"
+                                          f"В наличии: <b>{product_count}</b>")
+            elif transaction_cost <= user_balance_cents:
+                transaction = await Transaction(
+                    user_id=message.from_user.id,
+                    product_type=product.type,
+                    count=count,
+                    cost=transaction_cost,
+                    status=transaction_status,
+                    created_date=datetime.now()
+                ).create()
 
-            markup = await transaction_info_keyboard(transaction=transaction)
+                markup = await transaction_info_keyboard(transaction=transaction)
 
-            await message.answer(
-                text=f"Информация о покупке: \n\n"
-                     f"Название: <b>{product.name}</b>\n"
-                     f"Цена: <i><b>{get_usd_from_cents(transaction_cost)} USD</b></i>\n"
-                     f"Количество: <i><b>{count}</b></i>",
-                reply_markup=markup
-            )
+                await message.answer(
+                    text=f"Информация о покупке: \n\n"
+                         f"Название: <b>{product.name}</b>\n"
+                         f"Цена: <i><b>{get_usd_from_cents(transaction_cost)} USD</b></i>\n"
+                         f"Количество: <i><b>{count}</b></i>",
+                    reply_markup=markup
+                )
+            else:
+                await message.answer(text=f"Недостаточно средств для покупки!\n"
+                                          f"Не хватает: "
+                                          f"<b>{get_usd_from_cents(transaction_cost - user_balance_cents)} "
+                                          f"USD</b>")
+
         else:
-            await message.answer(text=f"Недостаточно средств для покупки!\n"
-                                      f"Не хватает: "
-                                      f"<b>{get_usd_from_cents(transaction_cost - user_balance_cents)} "
-                                      f"USD</b>")
+            await message.answer(text="Ошибка, попробуйте заново!")
 
-    else:
-        await message.answer("Ошибка, попробуйте заново!")
+    except Exception:
+        await message.answer(text="Ошибка, попробуйте заново!")
 
     await state.reset_state()
 
