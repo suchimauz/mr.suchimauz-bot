@@ -8,6 +8,7 @@ import time
 import email
 
 from loader import bot
+from utils.db.models.bank_account import get_bank_account_by_id, BankAccount
 from utils.db.models.mail import get_mail_by_email
 
 
@@ -61,6 +62,30 @@ async def cancel_bank_accounts():
         time.sleep(600)
 
 
+async def check_minik(imap, user_id, account_number, uid, bank_account: BankAccount):
+    result, data = imap.fetch(uid, '(BODY.PEEK[HEADER.FIELDS (SUBJECT)])')
+
+    if "Direct Deposit posted to your account" in data[0][1].decode():
+        result, data = imap.fetch(uid, '(BODY[TEXT])')
+        account_last_3_numbers = re.search(
+            'your account ending: <b>(.*)</b>',
+            data[0][1].decode()
+        ).groups()[0]
+
+        minik = re.search(
+            'A Direct Deposit for\s+(.*)\s+has posted to your',
+            data[0][1].decode()
+        ).groups()[0]
+
+        if account_number.endswith(account_last_3_numbers):
+            await bot.send_message(
+                chat_id=user_id,
+                text=f"Deposit for account {account_number}: <b>{minik}</b>"
+            )
+
+            await bank_account.update(status="success").apply()
+
+
 async def check_schwab_miniks():
     db = Gino()
     await db.set_bind(POSTGRES_URI)
@@ -72,37 +97,30 @@ async def check_schwab_miniks():
     )
 
     result = await db.all(query)
-
     for mail_array in result:
         account_number = mail_array[1]
         user_id = mail_array[2]
         bank_account_id = mail_array[3]
 
+        bank_account = await get_bank_account_by_id(bank_account_id)
+
         mail = await get_mail_by_email(mail_array[0])
+        login = mail.email
+        password = mail.password
 
         imap = imaplib.IMAP4_SSL('imap.mail.ru')
-        imap.login(mail.email, mail.password)
+        imap.login(login, password)
+
         imap.list()
         imap.select()
-        result, data = imap.search(None, 'ALL')
+        r1, inbox = imap.search(None, 'ALL')
 
-        for uid in data[0].split():
-            result, data = imap.fetch(uid, '(BODY.PEEK[HEADER.FIELDS (SUBJECT)])')
-            if "Direct Deposit posted to your account" in data[0][1].decode():
-                result, data = imap.fetch(uid, '(BODY[TEXT])')
+        for uid in inbox[0].split():
+            await check_minik(imap, user_id, account_number, uid, bank_account)
 
-                account_last_3_numbers = re.search(
-                    'your account ending: <b>(.*)</b>',
-                    data[0][1].decode()
-                ).groups()[0]
+        imap.list()
+        imap.select("&BCEEPwQwBDw-")
+        r2, spam = imap.search(None, 'ALL')
 
-                minik = re.search(
-                    'A Direct Deposit for\s+(.*)\s+has posted to your',
-                    data[0][1].decode()
-                ).groups()[0]
-
-                if account_number.endswith(account_last_3_numbers):
-                    await bot.send_message(
-                        chat_id=user_id,
-                        text=f"Deposit for account {account_number}: <b>{minik}</b>"
-                    )
+        for uid in spam[0].split():
+            await check_minik(imap, user_id, account_number, uid, bank_account)

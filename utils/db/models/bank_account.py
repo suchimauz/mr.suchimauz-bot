@@ -61,3 +61,7 @@ async def get_available_ba_for_user(count) -> List[BankAccount]:
         .limit(count)\
         .order_by(BankAccount.created_date.desc())\
         .gino.all()
+
+
+async def get_bank_account_by_id(bank_account_id) -> BankAccount:
+    return await BankAccount.query.where(BankAccount.id == bank_account_id).gino.first()
