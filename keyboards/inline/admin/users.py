@@ -83,7 +83,7 @@ async def admin_users_list_keyboard(prev_keyboard, search, page):
                     keyboard="admin_user_show",
                     prev_keyboard=CURRENT_KEYBOARD,
                     search=search,
-                    page=page,
+                    page=1,
                     user_id=user.id
                 )
             )
@@ -121,7 +121,7 @@ async def admin_user_show_keyboard(prev_keyboard, search, page, user_id):
             callback_data=make_admin_cd_callback_data(
                 keyboard="admin_user_product_prices_list",
                 search=search,
-                page=page,
+                page=1,
                 user_id=user_id
             )
         )
@@ -133,7 +133,7 @@ async def admin_user_show_keyboard(prev_keyboard, search, page, user_id):
             callback_data=make_admin_cd_callback_data(
                 keyboard=prev_keyboard,
                 search=search,
-                page=page,
+                page=1,
             )
         )
     )
@@ -181,7 +181,7 @@ async def admin_user_product_prices_list_keyboard(prev_keyboard, search, page, u
             callback_data=make_admin_cd_callback_data(
                 keyboard="admin_user_show",
                 search=search,
-                page=page,
+                page=1,
                 user_id=user_id
             )
         )
