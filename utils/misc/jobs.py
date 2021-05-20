@@ -1,8 +1,11 @@
 import quopri
 import re
 
+from aiogram import Bot, types
 from gino import Gino
 import imaplib
+
+from data import config
 from data.config import POSTGRES_URI
 import time
 import email
@@ -62,7 +65,7 @@ async def cancel_bank_accounts():
         time.sleep(600)
 
 
-async def check_minik(imap, user_id, account_number, uid, bank_account: BankAccount):
+async def check_minik(db, bot, imap, user_id, account_number, uid, bank_account_id):
     result, data = imap.fetch(uid, '(BODY.PEEK[HEADER.FIELDS (SUBJECT)])')
 
     if "Direct Deposit posted to your account" in data[0][1].decode():
@@ -78,12 +81,18 @@ async def check_minik(imap, user_id, account_number, uid, bank_account: BankAcco
         ).groups()[0]
 
         if account_number.endswith(account_last_3_numbers):
+
             await bot.send_message(
                 chat_id=user_id,
                 text=f"<i><b>Charles Schwab:</b></i> Deposit for account {account_number}: <b>{minik}</b>"
             )
 
-            await bank_account.update(status="success").apply()
+            await db.status(
+                db.text(
+                    f"UPDATE bank_accounts SET status='success' "
+                    f"WHERE id = {int(bank_account_id)}"
+                )
+            )
 
 
 async def check_schwab_miniks():
@@ -91,23 +100,28 @@ async def check_schwab_miniks():
     await db.set_bind(POSTGRES_URI)
 
     while True:
+        bot = Bot(token=config.BOT_TOKEN, parse_mode=types.ParseMode.HTML)
         query = db.text(
             "SELECT bank_email AS email, account_number, status_changed_by, id AS user_id "
             "FROM bank_accounts "
-            "WHERE status = 'wait-minik'"
+            "WHERE status = 'wait-minik' "
         )
 
         result = await db.all(query)
         for mail_array in result:
+            login = mail_array[0]
             account_number = mail_array[1]
             user_id = mail_array[2]
             bank_account_id = mail_array[3]
 
-            bank_account = await get_bank_account_by_id(bank_account_id)
+            mail = await db.first(
+                db.text(
+                    f"SELECT password FROM mails "
+                    f"WHERE email = '{login}'"
+                )
+            )
 
-            mail = await get_mail_by_email(mail_array[0])
-            login = mail.email
-            password = mail.password
+            password = mail[0]
 
             imap = imaplib.IMAP4_SSL('imap.mail.ru')
             imap.login(login, password)
@@ -117,13 +131,13 @@ async def check_schwab_miniks():
             r1, inbox = imap.search(None, 'ALL')
 
             for uid in inbox[0].split():
-                await check_minik(imap, user_id, account_number, uid, bank_account)
+                await check_minik(db, bot, imap, user_id, account_number, uid, bank_account_id)
 
             imap.list()
             imap.select("&BCEEPwQwBDw-")
             r2, spam = imap.search(None, 'ALL')
 
             for uid in spam[0].split():
-                await check_minik(imap, user_id, account_number, uid, bank_account)
+                await check_minik(db, bot, imap, user_id, account_number, uid, bank_account_id)
 
         time.sleep(10800)
