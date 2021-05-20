@@ -15,8 +15,4 @@ class AdminFilter(BoundFilter):
     async def check(self, message: Union[types.Message, types.CallbackQuery]):
         is_admin = is_admin_func(message.from_user.id)
 
-        if self.is_admin is not None:
-            if not is_admin:
-                await message.answer("Вы не являетесь администратором!")
-
         return is_admin is self.is_admin
