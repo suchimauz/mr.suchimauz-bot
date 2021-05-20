@@ -80,7 +80,7 @@ async def check_minik(imap, user_id, account_number, uid, bank_account: BankAcco
         if account_number.endswith(account_last_3_numbers):
             await bot.send_message(
                 chat_id=user_id,
-                text=f"Deposit for account {account_number}: <b>{minik}</b>"
+                text=f"<i><b>Charles Schwab:</b></i> Deposit for account {account_number}: <b>{minik}</b>"
             )
 
             await bank_account.update(status="success").apply()
