@@ -8,5 +8,6 @@ from .models.transaction import db
 from .models.payment_method import db
 from .models.check import db
 from .models.mail import db
+from .models.referral import db
 
 __all__ = ["db"]

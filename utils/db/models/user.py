@@ -72,3 +72,5 @@ async def add_user(**kwargs):
     if user is None:
         new_user = await User(**kwargs).create()
         return new_user
+    else:
+        return None
