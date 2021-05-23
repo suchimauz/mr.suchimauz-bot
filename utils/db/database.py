@@ -9,8 +9,8 @@ ba_products = [
     {
         "type": "schwab",
         "name": "Charles Schwab",
-        "default_price": 200,  # Cents
-        "whole_price": 180,
+        "default_price": 150,  # Cents
+        "whole_price": 140,
         "category": "bank_account"
     },
 ]

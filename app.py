@@ -1,5 +1,6 @@
 import asyncio
 import threading
+from hashlib import sha256
 
 from aiogram import executor
 
@@ -26,3 +27,4 @@ async def on_startup(dispatcher):
 
 if __name__ == '__main__':
     executor.start_polling(dp, on_startup=on_startup, skip_updates=True)
+
