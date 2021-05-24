@@ -39,11 +39,13 @@ async def activate_check_and_return_msg(user_id, check_id):
         check = await Check.query.where(Check.id == check_id).gino.first()
 
         if check.status == "waiting":
+            cost_usd = get_usd_from_cents(check.cost)
+
             payment = await Payment(
                 user_id=user_id,
                 payment_method="check",
                 cost=check.cost,
-                cost_rub=get_current_rub_from_usd(check.cost),
+                cost_rub=get_current_rub_from_usd(cost_usd),
                 status="success"
             ).create()
 
