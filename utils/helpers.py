@@ -15,14 +15,17 @@ def chunks(lst, n):
 
 
 def get_current_rub_from_usd(usd):
-    request = requests.get("https://www.cbr-xml-daily.ru/latest.js")
-    response = request.json()
+    if usd > 0:
+        request = requests.get("https://www.cbr-xml-daily.ru/latest.js")
+        response = request.json()
 
-    usd_multiplier = response['rates']['USD']
+        usd_multiplier = response['rates']['USD']
 
-    rub = usd / usd_multiplier
+        rub = usd / usd_multiplier
 
-    return round(rub)
+        return round(rub)
+    else:
+        return 0
 
 
 def get_current_usd_from_rub(rub):
@@ -43,7 +46,9 @@ def get_cents_from_usd(usd):
 
 
 def get_usd_from_cents(cents):
-    usd = cents / 100
+    if cents > 0:
+        usd = cents / 100
 
-    return round(usd, 2)
-
+        return round(usd, 2)
+    else:
+        return 0

@@ -7,7 +7,9 @@ from handlers.users.shop import list_product_categories
 from keyboards.default.menu import get_menu
 
 from loader import dp
+from utils.db.models.referral import get_referrals_count_by_referrer_id, get_referrals_cost_by_referrer_id
 from utils.db.models.user import get_user_balance
+from utils.helpers import get_usd_from_cents
 
 
 @dp.message_handler(Command("menu"))
@@ -33,11 +35,20 @@ async def show_admin_menu(message: Message):
 @dp.message_handler(Command("profile"))
 async def show_profile(message: Message):
     balance = await get_user_balance(message.from_user.id)
+    referrals_count = await get_referrals_count_by_referrer_id(message.from_user.id)
+    referrals_cost = await get_referrals_cost_by_referrer_id(message.from_user.id)
+
+    text = f"Личный кабинет <b>{message.from_user.full_name}</b>\n\n" \
+           f"💬 Ваш ChatID: <b>{message.from_user.id}</b>\n" \
+           f"👤 Ваш логин:  @{message.from_user.username}\n" \
+           f"💰 Ваш баланс: <code>{balance} USD</code>"
+
+    if referrals_count > 0:
+        text = text + f"\n\n🧍🏻‍♂️ Количество рефералов: <b>{referrals_count}</b>\n" \
+                      f"📈 Купили на сумму: <code>{get_usd_from_cents(referrals_cost)} USD</code>"
+
     await message.answer(
-        text=f"Личный кабинет <b>{message.from_user.full_name}</b>\n\n"
-             f"💬 Ваш ChatID: <b>{message.from_user.id}</b>\n"
-             f"👤 Ваш логин:  @{message.from_user.username}\n"
-             f"💰 Ваш баланс: <code>{balance} USD</code>")
+        text=text)
 
 
 @dp.message_handler(text="💵 Пополнить")
