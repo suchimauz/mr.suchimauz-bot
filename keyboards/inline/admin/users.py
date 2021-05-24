@@ -76,9 +76,14 @@ async def admin_users_list_keyboard(prev_keyboard, search, page):
     users_count = await get_users_count()
 
     for user in users:
+        if user.username:
+            text = user.username
+        else:
+            text = "Неизвестно"
+
         markup.row(
             InlineKeyboardButton(
-                text=user.username,
+                text=text,
                 callback_data=make_admin_cd_callback_data(
                     keyboard="admin_user_show",
                     prev_keyboard=CURRENT_KEYBOARD,
