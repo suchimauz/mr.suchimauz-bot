@@ -4,7 +4,8 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, ContentType
 from aiogram_broadcaster import MessageBroadcaster
 
-from keyboards.inline.admin.admin import admin_menu_keyboard, admin_cd, admin_send_message_to_all_users_cd
+from keyboards.inline.admin.admin import admin_menu_keyboard, admin_cd, admin_send_message_to_all_users_cd, \
+    admin_search_users_cd
 from keyboards.inline.admin.users import admin_users_list_keyboard, admin_user_show_keyboard, \
     admin_user_product_prices_list_keyboard
 from loader import dp, bot
@@ -152,3 +153,37 @@ async def send_message_to_users(message: Message, state: FSMContext):
     await MessageBroadcaster(users, message).run()
 
     await message.answer(text="Уведомление отправлено успешно!")
+
+
+@dp.callback_query_handler(admin_search_users_cd.filter(), is_admin=True)
+async def admin_search_users(call: CallbackQuery, state: FSMContext, callback_data: dict):
+    CURRENT_KEYBOARD = callback_data.get('keyboard')
+    prev_keyboard = callback_data.get('prev_keyboard')
+    page = callback_data.get('page')
+
+    await state.set_state("wait_admin_search_users_text")
+    await state.update_data(keyboard=CURRENT_KEYBOARD)
+    await state.update_data(prev_keyboard=prev_keyboard)
+    await state.update_data(page=page)
+
+    await call.message.answer(text="Введите поисковый запрос")
+
+
+@dp.message_handler(state="wait_admin_search_users_text", is_admin=True)
+async def admin_search_users_text(message: Message, state: FSMContext):
+    state_data = await state.get_data()
+
+    prev_keyboard = state_data['prev_keyboard']
+    page = int(state_data['page'])
+    search = message.text
+
+    await state.reset_state()
+
+    text = "Выберите пользователя"
+    markup = await admin_users_list_keyboard(
+        prev_keyboard=prev_keyboard,
+        search=search,
+        page=page,
+    )
+
+    await message.answer(text=text, reply_markup=markup)

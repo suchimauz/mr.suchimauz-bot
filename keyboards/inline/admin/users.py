@@ -2,7 +2,7 @@ import math
 
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from keyboards.inline.admin.admin import make_admin_cd_callback_data
+from keyboards.inline.admin.admin import make_admin_cd_callback_data, admin_search_users_cd
 from utils.db.models.product import get_products, get_product_count
 from utils.db.models.user import get_users, get_users_count, get_user
 from utils.helpers import get_usd_from_cents
@@ -59,9 +59,47 @@ def markup_paging(markup: InlineKeyboardMarkup, keyboard, prev_keyboard, search,
                 )
             )
         )
+
+        markup.row(
+            InlineKeyboardButton(
+                text="🔎 Поиск",
+                callback_data=admin_search_users_cd.new(
+                    keyboard=keyboard,
+                    prev_keyboard=prev_keyboard,
+                    page=page,
+                )
+            )
+        )
+
+        if search != "" and search != "0" and search:
+            markup.insert(
+                InlineKeyboardButton(
+                    text="Отменить поиск",
+                    callback_data=make_admin_cd_callback_data(
+                        keyboard=keyboard,
+                        prev_keyboard=prev_keyboard,
+                        search="",
+                        page=1,
+                    )
+                )
+            )
+
         return markup
 
     else:
+        if search != "" and search != "0" and search:
+            markup.row(
+                InlineKeyboardButton(
+                    text="Отменить поиск",
+                    callback_data=make_admin_cd_callback_data(
+                        keyboard=keyboard,
+                        prev_keyboard=prev_keyboard,
+                        search="",
+                        page=1,
+                    )
+                )
+            )
+
         return markup
 
 
@@ -72,8 +110,8 @@ async def admin_users_list_keyboard(prev_keyboard, search, page):
     page = int(page)
     limit = 10
     offset = limit * (page - 1)
-    users = await get_users(limit=limit, offset=offset)
-    users_count = await get_users_count()
+    users = await get_users(limit=limit, offset=offset, search=search)
+    users_count = await get_users_count(search=search)
 
     for user in users:
         if user.username:
@@ -125,7 +163,7 @@ async def admin_user_show_keyboard(prev_keyboard, search, page, user_id):
             text="Цены на товары",
             callback_data=make_admin_cd_callback_data(
                 keyboard="admin_user_product_prices_list",
-                search=search,
+                search="",
                 page=1,
                 user_id=user_id
             )
@@ -185,7 +223,7 @@ async def admin_user_product_prices_list_keyboard(prev_keyboard, search, page, u
             text="Отмена",
             callback_data=make_admin_cd_callback_data(
                 keyboard="admin_user_show",
-                search=search,
+                search="",
                 page=1,
                 user_id=user_id
             )

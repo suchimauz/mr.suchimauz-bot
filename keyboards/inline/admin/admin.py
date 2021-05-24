@@ -19,9 +19,18 @@ admin_upload_mails_from_file_cd = CallbackData(
     "admin_upload_mails_from_file",
     "cancel"
 )
+admin_search_users_cd = CallbackData(
+    "admin_search_users",
+    "keyboard",
+    "prev_keyboard",
+    "page",
+)
 
 
 def make_admin_cd_callback_data(keyboard, prev_keyboard="0", search="0", page=1, user_id="0"):
+    if search == "":
+        search = "0"
+
     return admin_cd.new(
         keyboard=keyboard,
         prev_keyboard=prev_keyboard,

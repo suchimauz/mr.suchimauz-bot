@@ -1,6 +1,6 @@
 from typing import List
 
-from sqlalchemy import sql, Column, and_
+from sqlalchemy import sql, Column, and_, or_
 
 from utils.db.database import db
 from utils.db.models.payment import Payment
@@ -17,14 +17,32 @@ class User(db.Model):
     last_activity = Column(db.DateTime, nullable=True)
 
 
-async def get_users_count():
-    return await db.select([db.func.count(User.id)]).gino.scalar()
+async def get_users_count(search=""):
+    or_conditions = []
+
+    for arg in search.split():
+        or_conditions.append(db.func.concat(User.id, User.username).ilike(f"%{arg}%"))
+
+    query = db.select([db.func.count(User.id)])
+
+    if search != "" and search != "0":
+        query = query.where(or_(*or_conditions))
+
+    return await query.gino.scalar()
 
 
-async def get_users(limit, offset) -> List[User]:
-    users = await User.query.limit(limit).offset(offset).gino.all()
+async def get_users(limit, offset, search="") -> List[User]:
+    or_conditions = []
 
-    return users
+    for arg in search.split():
+        or_conditions.append(db.func.concat(User.id, User.username).ilike(f"%{arg}%"))
+
+    query = User.query.limit(limit).offset(offset)
+
+    if search != "" and search != "0":
+        query = query.where(or_(*or_conditions))
+
+    return await query.gino.all()
 
 
 async def get_users_ids():
