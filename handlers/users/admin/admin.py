@@ -8,7 +8,9 @@ from keyboards.inline.admin.admin import admin_menu_keyboard, admin_cd, admin_se
 from keyboards.inline.admin.users import admin_users_list_keyboard, admin_user_show_keyboard, \
     admin_user_product_prices_list_keyboard
 from loader import dp, bot
+from utils.db.models.referral import get_referrals_count_by_referrer_id, get_referrals_cost_by_referrer_id
 from utils.db.models.user import get_user, get_user_balance, get_users_ids
+from utils.helpers import get_usd_from_cents
 
 
 async def list_admin_menu(message: Union[Message, CallbackQuery], **kwargs):
@@ -42,11 +44,18 @@ async def admin_user_show(call=CallbackQuery, prev_keyboard=None, search="", pag
         prev_keyboard = "admin_users_list"
 
     user = await get_user(user_id)
-    balance = await get_user_balance(user_id=user_id)
+    balance = await get_user_balance(user_id)
+
+    referrals_count = await get_referrals_count_by_referrer_id(user_id)
+    referrals_cost = await get_referrals_cost_by_referrer_id(user_id)
 
     text = f"Пользователь <b>@{user.username}</b>\n\n" \
            f"💬 ChatID: <b>{user.id}</b>\n" \
            f"💰 Баланс: <code>{balance} USD</code>"
+
+    if referrals_count > 0:
+        text = text + f"\n\n🧍🏻‍♂️ Количество рефералов: <b>{referrals_count}</b>\n" \
+                      f"📈 Купили на сумму: <code>{get_usd_from_cents(referrals_cost)} USD</code>"
 
     markup = await admin_user_show_keyboard(
         prev_keyboard=prev_keyboard,
