@@ -57,7 +57,7 @@ class Product(db.Model):
         default_price = await self.get_default_price(user_id)
         whole_price = await self.get_whole_price(user_id)
 
-        if count <= 50:
+        if count < 50:
             price = default_price * count
         else:
             price = whole_price * count
