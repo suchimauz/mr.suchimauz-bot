@@ -13,7 +13,7 @@ class Referral(db.Model):
 
 
 async def get_referrer_user_by_user_id(user_id) -> User:
-    row = await Referral.query.where(Referral.user_id == user_id).gino.first()
+    row = await Referral.query.where(Referral.user_id == int(user_id)).gino.first()
 
     return await User.query.where(User.id == row.referrer_id).gino.first()
 

@@ -19,6 +19,10 @@ product_categories = [
     {
         "category": "bank_account",
         "name": "🏦 Банковские Аккаунты"
+    },
+    {
+        "category": "logs",
+        "name": "📃 Логи"
     }
 ]
 

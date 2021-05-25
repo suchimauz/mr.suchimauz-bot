@@ -22,9 +22,25 @@ async def list_product_categories(message: Union[Message, CallbackQuery], **kwar
 
 
 async def list_products(callback: CallbackQuery, category, **kwargs):
-    markup = await products_keyboard(category=category, user_id=callback.from_user.id)
+    if category == 'logs':
+        text = f"<b>Логи:</b>\n\n" \
+               f"🟢 <b>Google:</b>\n" \
+               f"🔥 No ADS MIX | 💰 <b>0.9$</b> <i>(от 100 шт по 0.8$)</i>\n" \
+               f"🔥 No ADS EU | 💰 <b>1.5$</b> <i>(от 100 шт по 1.3$)</i>\n" \
+               f"🔥 Gpay+cc EU | 💰 <b>3.2$</b> <i>(от 100 шт по 1.3$)</i>\n" \
+               f"🔥 Gpay+cc MIX | 💰 <b>2.2$</b> <i>(от 100 шт по 2$)</i>\n\n" \
+               f"🔵 <b>Facebook:</b>\n" \
+               f"🔥 MIX | 💰 <b>2.0$$</b> <i>(от 100 шт по 0.8$)</i>\n" \
+               f"🔥 MIX лимит 250-350$ | 💰 <b>7.0$</b> <i>(от 100 шт по 1.3$)</i>\n" \
+               f"🔥 FB+BM MIX | 💰 <b>3.0$</b> <i>(от 100 шт по 1.3$)</i>\n" \
+               f"🔥 с ЗРД | 💰 <b>1.5$</b> <i>(от 100 шт по 2$)</i>\n\n" \
+               f"За покупкой обращаться @logs_suchimauz"
 
-    await callback.message.edit_text(text="Выберите товар", reply_markup=markup)
+        await callback.message.answer(text=text)
+    else:
+        markup = await products_keyboard(category=category, user_id=callback.from_user.id)
+
+        await callback.message.edit_text(text="Выберите товар", reply_markup=markup)
 
 
 async def show_product(callback: CallbackQuery, category, product_type, **kwargs):
