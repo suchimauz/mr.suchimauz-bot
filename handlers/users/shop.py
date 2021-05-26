@@ -32,8 +32,7 @@ async def list_products(callback: CallbackQuery, category, **kwargs):
                f"🔵 <b>Facebook:</b>\n" \
                f"🔥 MIX | 💰 <b>2.0$</b> <i>(от 100 шт по 1.8$)</i>\n" \
                f"🔥 MIX лимит 250-350$ | 💰 <b>7.0$</b>\n" \
-               f"🔥 FB+BM MIX | 💰 <b>3.0$</b> <i>(от 100 шт по 2.9$)</i>\n" \
-               f"🔥 с ЗРД | 💰 <b>1.5$</b> <i>(от 100 шт по 1.3$)</i>\n\n" \
+               f"🔥 FB+BM MIX | 💰 <b>3.0$</b> <i>(от 100 шт по 2.9$)</i>\n\n" \
                f"За покупкой обращаться @logs_suchimauz\n" \
                f"❗️Бесплатных тестов нет. Минимальный заказ - <b>10$</b>"
 

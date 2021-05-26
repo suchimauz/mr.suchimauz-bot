@@ -28,6 +28,10 @@ BROTHERS = [
         'id': 607078788,  # Рустам
         'column': "I"
     },
+{
+        'id': 798072048,  # Димас Герлов
+        'column': "K"
+    },
 ]
 
 BOT_TOKEN = env.str("BOT_TOKEN")  # Забираем значение типа str
