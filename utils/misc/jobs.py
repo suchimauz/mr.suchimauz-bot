@@ -65,7 +65,7 @@ async def cancel_bank_accounts():
     while True:
         query = db.text(
             "UPDATE bank_accounts SET status = 'cancelled' "
-            "WHERE created_date < (CURRENT_TIMESTAMP + '-8 hours') and "
+            "WHERE created_date < (CURRENT_TIMESTAMP + '-6 hours') and "
             "status = 'waiting'"
         )
 
