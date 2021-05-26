@@ -1,18 +1,27 @@
+import os
 import quopri
 import re
+from pprint import pprint
 
 from aiogram import Bot, types
 from gino import Gino
 import imaplib
+import httplib2
+from google.oauth2.service_account import Credentials
+from googleapiclient.discovery import build
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import UserAccessTokenCredentials
 
 from data import config
-from data.config import POSTGRES_URI
+from data.config import POSTGRES_URI, ROOT_DIR, SPREADSHEET_ID, BROTHERS
 import time
 import email
 
 from loader import bot
 from utils.db.models.bank_account import get_bank_account_by_id, BankAccount
 from utils.db.models.mail import get_mail_by_email
+from utils.helpers import get_usd_from_cents
 
 
 async def send_report_transactions():
@@ -144,3 +153,55 @@ async def check_schwab_miniks():
                 await check_minik(db, bot, imap, user_id, account_number, uid, bank_account_id)
 
         time.sleep(7200)
+
+
+async def update_brothers_cost_sheet():
+    try:
+        CREDENTIALS_FILE = os.path.join(ROOT_DIR, 'token.json')
+        spreadsheet_id = SPREADSHEET_ID
+
+        credentials = Credentials.from_service_account_file(CREDENTIALS_FILE)
+        service = build('sheets', 'v4', credentials=credentials)
+
+        db = Gino()
+        await db.set_bind(POSTGRES_URI)
+
+        while True:
+            data = []
+            for brother in BROTHERS:
+                query = db.text(
+                    f"SELECT sum(t.cost) "
+                    f"FROM referrals r "
+                    f"JOIN users u "
+                    f"ON u.id = r.user_id "
+                    f"JOIN transactions t "
+                    f"ON t.user_id = u.id "
+                    f"WHERE r.referrer_id = {int(brother['id'])}"
+                )
+                result = await db.first(query)
+                if result[0]:
+                    cost = result[0]
+                else:
+                    cost = 0
+
+                data.append(
+                    {
+                        "range": f"{brother['column']}3",
+                        "values": [[get_usd_from_cents(cost)]]
+                    }
+                )
+
+            service.spreadsheets().values().batchUpdate(
+                spreadsheetId=spreadsheet_id,
+                body={
+                    "valueInputOption": "USER_ENTERED",
+                    "data": data
+                }
+            ).execute()
+
+            time.sleep(10)
+    except FileNotFoundError:
+        print("token.json not found")
+    except Exception as e:
+        print(e)
+        pass
