@@ -24,17 +24,19 @@ async def list_product_categories(message: Union[Message, CallbackQuery], **kwar
 async def list_products(callback: CallbackQuery, category, **kwargs):
     if category == 'logs':
         text = f"<b>Логи:</b>\n\n" \
-               f"🟢 <b>Google:</b>\n" \
-               f"🔥 No ADS MIX | 💰 <b>0.9$</b> <i>(от 100 шт по 0.8$)</i>\n" \
-               f"🔥 No ADS EU | 💰 <b>1.5$</b> <i>(от 100 шт по 1.3$)</i>\n" \
-               f"🔥 Gpay+cc EU | 💰 <b>3.2$</b> <i>(от 100 шт по 3.0$)</i>\n" \
-               f"🔥 Gpay+cc MIX | 💰 <b>2.2$</b> <i>(от 100 шт по 2.0$)</i>\n\n" \
-               f"🔵 <b>Facebook:</b>\n" \
-               f"🔥 MIX | 💰 <b>2.0$</b> <i>(от 100 шт по 1.8$)</i>\n" \
-               f"🔥 MIX лимит 250-350$ | 💰 <b>7.0$</b>\n" \
-               f"🔥 FB+BM MIX | 💰 <b>3.0$</b> <i>(от 100 шт по 2.9$)</i>\n\n" \
-               f"За покупкой обращаться @logs_suchimauz\n" \
-               f"❗️Бесплатных тестов нет. Минимальный заказ - <b>10$</b>"
+                f"🟢 <b>Google:</b>\n" \
+                f"🔥 No ADS MIX | 💰 <b>0.9$</b> <i>(от 100 шт по 0.8$)</i>\n" \
+                f"🔥 No ADS EU | 💰 <b>1.5$</b> <i>(от 100 шт по 1.3$)</i>\n" \
+                f"🔥 No ADS USA | 💰 <b>2$</b> <i>(от 100 шт по 1.8$)</i>\n" \
+                f"🔥 Gpay+cc EU TOP | 💰 <b>3.7$</b> <i>(от 50 шт по 3.5$)</i>\n" \
+                f"🔥 Gpay+cc USA | 💰 <b>4.5$</b> \n" \
+                f"🔥 Gpay+cc MIX | 💰 <b>2.2$</b> <i>(от 100 шт по 2.0$)</i>\n\n" \
+                f"🔵 <b>Facebook:</b>\n" \
+                f"🔥 MIX | 💰 <b>2.0$</b> <i>(от 100 шт по 1.8$)</i>\n" \
+                f"🔥 MIX лимит 250-350$ | 💰 <b>7.0$</b>\n" \
+                f"🔥 FB+BM MIX | 💰 <b>3.0$</b> <i>(от 100 шт по 2.9$)</i>\n\n" \
+                f"За покупкой обращаться @logs_suchimauz\n" \
+                f"❗️Бесплатных тестов нет. Минимальный заказ - <b>10$</b>"
 
         await callback.message.answer(text=text)
     else:
