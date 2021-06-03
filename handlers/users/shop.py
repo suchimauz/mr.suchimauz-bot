@@ -29,7 +29,7 @@ async def list_products(callback: CallbackQuery, category, **kwargs):
                 f"🔥 No ADS EU | 💰 <b>1.5$</b> <i>(от 100 шт по 1.3$)</i>\n" \
                 f"🔥 No ADS USA | 💰 <b>2$</b> <i>(от 100 шт по 1.8$)</i>\n" \
                 f"🔥 Gpay+cc EU TOP | 💰 <b>3.7$</b> <i>(от 50 шт по 3.5$)</i>\n" \
-                f"🔥 Gpay+cc USA | 💰 <b>4.5$</b> \n" \
+                f"🔥 Gpay+cc USA | 💰 <b>4.5$</b> <i>(от 50 шт по 4$)</i> \n" \
                 f"🔥 Gpay+cc MIX | 💰 <b>2.2$</b> <i>(от 100 шт по 2.0$)</i>\n\n" \
                 f"🔵 <b>Facebook:</b>\n" \
                 f"🔥 MIX | 💰 <b>2.0$</b> <i>(от 100 шт по 1.8$)</i>\n" \
