@@ -65,4 +65,5 @@ async def show_shop(message: Message):
 @dp.message_handler(text="📕 Правила")
 @dp.message_handler(Command("rules"))
 async def show_rules(message: Message):
-    await message.answer(text="Правила")
+    await message.answer(text="Правила:\n\n"
+                              "1. Вывод средств не осуществляется!")
