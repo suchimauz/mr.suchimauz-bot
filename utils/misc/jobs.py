@@ -121,36 +121,46 @@ async def check_schwab_miniks():
 
         result = await db.all(query)
         for mail_array in result:
+
             login = mail_array[0]
             account_number = mail_array[1]
             user_id = mail_array[2]
             bank_account_id = mail_array[3]
 
-            mail = await db.first(
-                db.text(
-                    f"SELECT password FROM mails "
-                    f"WHERE email = '{login}'"
+            try:
+                mail = await db.first(
+                    db.text(
+                        f"SELECT password FROM mails "
+                        f"WHERE email = '{login}'"
+                    )
                 )
-            )
 
-            password = mail[0]
+                password = mail[0]
 
-            imap = imaplib.IMAP4_SSL('imap.mail.ru')
-            imap.login(login, password)
+                imap = imaplib.IMAP4_SSL('imap.mail.ru')
+                imap.login(login, password)
 
-            imap.list()
-            imap.select()
-            r1, inbox = imap.search(None, 'ALL')
+                imap.list()
+                imap.select()
+                r1, inbox = imap.search(None, 'ALL')
 
-            for uid in inbox[0].split():
-                await check_minik(db, bot, imap, user_id, account_number, uid, bank_account_id)
+                for uid in inbox[0].split():
+                    await check_minik(db, bot, imap, user_id, account_number, uid, bank_account_id)
 
-            imap.list()
-            imap.select("&BCEEPwQwBDw-")
-            r2, spam = imap.search(None, 'ALL')
+                imap.list()
+                imap.select("&BCEEPwQwBDw-")
+                r2, spam = imap.search(None, 'ALL')
 
-            for uid in spam[0].split():
-                await check_minik(db, bot, imap, user_id, account_number, uid, bank_account_id)
+                for uid in spam[0].split():
+                    await check_minik(db, bot, imap, user_id, account_number, uid, bank_account_id)
+
+            except Exception:
+                await db.status(
+                    db.text(
+                        f"UPDATE bank_accounts SET status='cancelled' "
+                        f"WHERE id = {int(bank_account_id)}"
+                    )
+                )
 
         time.sleep(7200)
 
