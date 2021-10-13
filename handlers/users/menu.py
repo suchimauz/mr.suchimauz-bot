@@ -26,7 +26,7 @@ async def show_shop(message: Message):
 
 
 @dp.message_handler(text="👤 Админ-панель", is_admin=True)
-@dp.message_handler(Command("admin"))
+@dp.message_handler(Command("admin"), is_admin=True)
 async def show_admin_menu(message: Message):
     await list_admin_menu(message)
 
